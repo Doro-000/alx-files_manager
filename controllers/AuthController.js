@@ -1,0 +1,40 @@
+import { Buffer } from 'buffer';
+import { v4 } from 'uuid';
+import dbClient, { DBClient } from '../utils/db';
+import redisClient from '../utils/redis';
+
+export default class AuthController {
+  static async getConnect(request, response) {
+    if (!request.headers.authorization) {
+      response.status(401).json({ error: 'Unauthorized' }).end();
+    } else {
+      const encodedAuthPair = request.headers.authorization.split(' ')[1];
+      const decodedAuthPair = Buffer.from(encodedAuthPair, 'base64').toString().split(':');
+      const email = decodedAuthPair[0];
+      const pass = DBClient.SHA1(decodedAuthPair[1]);
+      const usr = await dbClient.getUserByEmail(email);
+      if (usr) {
+        if (usr.password !== pass) {
+          response.status(403).json({ error: 'Forbidden' }).end();
+        } else {
+          const _token = v4();
+          await redisClient.set(`auth_${_token}`, usr._id.toString(), 86400);
+          response.status(200).json({ token: _token }).end();
+        }
+      } else {
+        response.status(401).json({ error: 'Unauthorized' }).end();
+      }
+    }
+  }
+
+  static async getDisconnect(request, response) {
+    let token = request.headers['x-token'];
+    if (!token) {
+      response.status(401).json({ error: 'Unauthorized' }).end();
+    } else {
+      token = `auth_${token}`;
+      await redisClient.del(token);
+      response.status(204).end();
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import { env } from 'process';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectID } from 'mongodb';
 import { createHash } from 'crypto';
 
-class DBClient {
+export class DBClient {
   static SHA1(str) {
     return createHash('SHA1').update(str).digest('hex');
   }
@@ -40,6 +40,18 @@ class DBClient {
     }
     const passwordHash = DBClient.SHA1(password);
     return myCollection.insertOne({ email: _email, password: passwordHash });
+  }
+
+  async getUserByEmail(_email) {
+    const myDB = this.myClient.db();
+    const myCollection = myDB.collection('users');
+    return myCollection.findOne({ email: _email });
+  }
+
+  async getUserById(id) {
+    const myDB = this.myClient.db();
+    const myCollection = myDB.collection('users');
+    return myCollection.findOne({ _id: ObjectID(id) });
   }
 }
 
