@@ -4,12 +4,5 @@ git*
 pull
 babel.config.js
 node_modules
-.eslintrc.js
-package-lock.json
-*.
-.*
+test.js
 .vscode
-*~
-main.js
-a.out
-*/__pycache__
