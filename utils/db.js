@@ -4,6 +4,7 @@ import { MongoClient, ObjectID } from 'mongodb';
 import { createHash } from 'crypto';
 import { v4 } from 'uuid';
 import { promises } from 'fs';
+
 const { open, mkdir } = promises;
 
 export class DBClient {
@@ -108,7 +109,18 @@ export class DBClient {
       // eslint-disable-next-line no-param-reassign
       filters._id = ObjectID(filters._id);
     }
-    return myCollection.find(filters, options);
+    if ('userId' in filters) {
+      // eslint-disable-next-line no-param-reassign
+      filters.userId = ObjectID(filters.userId);
+    }
+    return myCollection.findOne(filters, options);
+  }
+
+  async updatefiles(filters, options = {}) {
+    const myDB = this.myClient.db();
+    const myCollection = myDB.collection('files');
+    myCollection.updateOne(filters, { $set: options });
+    return myCollection.findOne(filters);
   }
 }
 

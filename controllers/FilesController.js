@@ -67,11 +67,43 @@ export default class FilesController {
     }
   }
 
+  static async putPublish(request, response) {
+    let token = request.headers['x-token'];
+    token = `auth_${token}`;
+    const userId = await redisClient.get(token);
+    const usr = await dbClient.filterUser({ _id: userId });
+    const file = await dbClient.findFiles({ userId });
+    if (!usr) {
+      response.status(401).json({ error: 'Unauthorized' }).end();
+    } else if (!file) {
+      response.status(404).json({ error: 'Not found' }).end();
+    } else {
+      const newFile = await dbClient.updatefiles(file, { isPublic: true });
+      response.status(200).json(newFile).end();
+    }
+  }
+
+  static async putUnpublish(request, response) {
+    let token = request.headers['x-token'];
+    token = `auth_${token}`;
+    const userId = await redisClient.get(token);
+    const usr = await dbClient.filterUser({ _id: userId });
+    const file = await dbClient.findFiles({ userId });
+    if (!usr) {
+      response.status(401).json({ error: 'Unauthorized' }).end();
+    } else if (!file) {
+      response.status(404).json({ error: 'Not found' }).end();
+    } else {
+      const newFile = await dbClient.updatefiles(file, { isPublic: false });
+      response.status(200).json(newFile).end();
+    }
+  }
+
   static async getIndex(request, response) {
     let token = request.headers['x-token'];
     token = `auth_${token}`;
-    const usrId = await redisClient.get(token);
-    const usr = await dbClient.filterUser({ _id: usrId });
+    const userId = await redisClient.get(token);
+    const usr = await dbClient.filterUser({ _id: userId });
 
     if (!usr) {
       response.status(401).json({ error: 'Unauthorized' }).end();
