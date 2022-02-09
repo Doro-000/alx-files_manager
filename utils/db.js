@@ -1,9 +1,6 @@
-import { Buffer } from 'buffer';
 import { env } from 'process';
 import { MongoClient, ObjectID } from 'mongodb';
 import { createHash } from 'crypto';
-import { v4 } from 'uuid';
-import { open, mkdir } from 'fs/promises';
 
 export class DBClient {
   static SHA1(str) {
@@ -22,10 +19,15 @@ export class DBClient {
     return this.myClient.isConnected();
   }
 
-  // -------------------------- Users -----------------------------
   async nbUsers() {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('users');
+    return myCollection.countDocuments();
+  }
+
+  async nbFiles() {
+    const myDB = this.myClient.db();
+    const myCollection = myDB.collection('files');
     return myCollection.countDocuments();
   }
 
@@ -40,60 +42,16 @@ export class DBClient {
     return myCollection.insertOne({ email: _email, password: passwordHash });
   }
 
-  async filterUser(filters) {
+  async getUserByEmail(_email) {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('users');
-    if ('_id' in filters) {
-      filters._id = ObjectID(filters._id);
-    }
-    return myCollection.findOne(filters);
+    return myCollection.findOne({ email: _email });
   }
 
-  // ----------------------------------- Files ---------------------------
-  async nbFiles() {
+  async getUserById(id) {
     const myDB = this.myClient.db();
-    const myCollection = myDB.collection('files');
-    return myCollection.countDocuments();
-  }
-
-  async newFile(_userId, _name, _type, _isPublic = false, _parentId = 0, _data = null) {
-    const myDB = this.myClient.db();
-    const myCollection = myDB.collection('files');
-
-    const fileRecord = {
-      userId: ObjectID(_userId),
-      name: _name,
-      type: _type,
-      parentId: _parentId,
-      isPublic: _isPublic,
-    };
-
-    const folderPath = env.FOLDER_PATH ? env.FOLDER_PATH : '/tmp/files_manager';
-    const storeName = `${folderPath}/${v4()}`;
-
-    if (_type === 'file') {
-      const File = await open(storeName, 'w');
-      await File.writeFile(Buffer.from(_data, 'base64').toString());
-      fileRecord.localPath = storeName;
-      File.close();
-    } else if (_type === 'image') {
-      const File = await open(storeName, 'w');
-      await File.writeFile(Buffer.from(_data, 'base64'));
-      fileRecord.localPath = storeName;
-      File.close();
-    } else if (_type === 'folder') {
-      await mkdir(storeName);
-    }
-    return myCollection.insertOne(fileRecord);
-  }
-
-  async filterFiles(filters) {
-    const myDB = this.myClient.db();
-    const myCollection = myDB.collection('files');
-    if ('_id' in filters) {
-      filters._id = ObjectID(filters._id);
-    }
-    return myCollection.findOne(filters);
+    const myCollection = myDB.collection('users');
+    return myCollection.findOne({ _id: ObjectID(id) });
   }
 }
 
