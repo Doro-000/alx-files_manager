@@ -3,7 +3,8 @@ import { env } from 'process';
 import { MongoClient, ObjectID } from 'mongodb';
 import { createHash } from 'crypto';
 import { v4 } from 'uuid';
-import fs from 'fs';
+import { promises } from 'fs';
+const { open, mkdir } = promises;
 
 export class DBClient {
   static SHA1(str) {
@@ -71,17 +72,17 @@ export class DBClient {
     const storeName = `${folderPath}/${v4()}`;
 
     if (_type === 'file') {
-      const File = await fs.open(storeName, 'w');
+      const File = await open(storeName, 'w');
       await File.writeFile(Buffer.from(_data, 'base64').toString());
       fileRecord.localPath = storeName;
       File.close();
     } else if (_type === 'image') {
-      const File = await fs.open(storeName, 'w');
+      const File = await open(storeName, 'w');
       await File.writeFile(Buffer.from(_data, 'base64'));
       fileRecord.localPath = storeName;
       File.close();
     } else if (_type === 'folder') {
-      await fs.mkdir(storeName);
+      await mkdir(storeName);
     }
     return myCollection.insertOne(fileRecord);
   }
