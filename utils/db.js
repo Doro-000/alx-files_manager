@@ -22,7 +22,6 @@ export class DBClient {
     return this.myClient.isConnected();
   }
 
-  // -------------------------- Users -----------------------------
   async nbUsers() {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('users');
@@ -49,7 +48,6 @@ export class DBClient {
     return myCollection.findOne(filters);
   }
 
-  // ----------------------------------- Files ---------------------------
   async nbFiles() {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('files');
