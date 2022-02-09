@@ -47,4 +47,39 @@ export default class FilesController {
       }
     }
   }
+
+  static async getShow(request, response) {
+    let token = request.headers['x-token'];
+    token = `auth_${token}`;
+    const usrId = await redisClient.get(token);
+    const usr = await dbClient.filterUser({ _id: usrId });
+
+    if (!usr) {
+      response.status(401).json({ error: 'Unauthorized' }).end();
+    } else {
+      const id = request.params.id;
+      const file = await dbClient.filterFiles({ _id: id });
+      if (!file) {
+        response.status(404).json({ error: 'Not found' }).end(); 
+      } else {
+        response.status(200).json(file).end();
+      }
+    }
+  }
+
+  static async getIndex(request, response) {
+    let token = request.headers['x-token'];
+    token = `auth_${token}`;
+    const usrId = await redisClient.get(token);
+    const usr = await dbClient.filterUser({ _id: usrId });
+
+    if (!usr) {
+      response.status(401).json({ error: 'Unauthorized' }).end();
+    } else {
+      const _parentId = request.query.parentId ? request.query.parentId : 0;
+      const page = request.query.page ? request.query.page : 0;
+      const cursor = await dbClient.findFiles({ parentId: _parentId }, { limit: 20, skip: 20 * page});
+      response.status(200).json(cursor.toArray()).end();
+    }
+  }
 }
