@@ -26,11 +26,11 @@ export default class FilesController {
       } else if (!data && type !== 'folder') {
         response.status(400).json({ error: 'Missing data' }).end();
       } else if (parentId) {
-        const folder = dbClient.filterFiles({ _id: parentId });
+        const folder = await dbClient.filterFiles({ _id: parentId });
         if (!folder) {
           response.status(400).json({ error: 'Parent not found' }).end();
         } else if (folder.type !== 'folder') {
-          response.status(400).json({ error: 'Parent is not a found' }).end();
+          response.status(400).json({ error: 'Parent is not a folder' }).end();
         }
       }
       // ------------------------ Validation --------------------------------
