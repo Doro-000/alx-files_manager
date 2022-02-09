@@ -3,6 +3,7 @@ import { env } from 'process';
 import { MongoClient, ObjectID } from 'mongodb';
 import { createHash } from 'crypto';
 import { v4 } from 'uuid';
+import fs from 'fs';
 
 export class DBClient {
   static SHA1(str) {
@@ -42,6 +43,7 @@ export class DBClient {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('users');
     if ('_id' in filters) {
+      // eslint-disable-next-line no-param-reassign
       filters._id = ObjectID(filters._id);
     }
     return myCollection.findOne(filters);
@@ -69,17 +71,17 @@ export class DBClient {
     const storeName = `${folderPath}/${v4()}`;
 
     if (_type === 'file') {
-      const File = await open(storeName, 'w');
+      const File = await fs.open(storeName, 'w');
       await File.writeFile(Buffer.from(_data, 'base64').toString());
       fileRecord.localPath = storeName;
       File.close();
     } else if (_type === 'image') {
-      const File = await open(storeName, 'w');
+      const File = await fs.open(storeName, 'w');
       await File.writeFile(Buffer.from(_data, 'base64'));
       fileRecord.localPath = storeName;
       File.close();
     } else if (_type === 'folder') {
-      await mkdir(storeName);
+      await fs.mkdir(storeName);
     }
     return myCollection.insertOne(fileRecord);
   }
@@ -88,6 +90,7 @@ export class DBClient {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('files');
     if ('_id' in filters) {
+      // eslint-disable-next-line no-param-reassign
       filters._id = ObjectID(filters._id);
     }
     return myCollection.findOne(filters);
