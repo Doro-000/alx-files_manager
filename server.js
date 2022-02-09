@@ -1,7 +1,7 @@
 import express from 'express';
 import { env } from 'process';
 import bodyParser from 'body-parser';
-import { router } from './routes/index';
+import router from './routes/index';
 
 const port = env.PORT ? env.PORT : 5000;
 const app = express();

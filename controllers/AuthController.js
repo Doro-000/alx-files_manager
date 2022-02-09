@@ -7,7 +7,6 @@ export default class AuthController {
   static async getConnect(request, response) {
     const encodedAuthPair = request.headers.authorization.split(' ')[1];
     const decodedAuthPair = Buffer.from(encodedAuthPair, 'base64').toString().split(':');
-    console.log(decodedAuthPair);
     const _email = decodedAuthPair[0];
     const pass = DBClient.SHA1(decodedAuthPair[1]);
     const usr = await dbClient.filterUser({ email: _email });
