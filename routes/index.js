@@ -3,6 +3,7 @@ import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
 import FileController from '../controllers/FilesController';
+import FilesController from '../controllers/FilesController';
 
 const router = Router();
 
@@ -37,5 +38,7 @@ router.get('/connect', AuthController.getConnect);
 router.get('/disconnect', AuthController.getDisconnect);
 router.get('/users/me', UsersController.getMe);
 router.post('/files', FileController.postUpload);
+router.get('/files/:id', FileController.getShow);
+router.get('/files', FilesController.getIndex)
 
 export default router;
