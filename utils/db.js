@@ -3,7 +3,7 @@ import { env } from 'process';
 import { MongoClient, ObjectID } from 'mongodb';
 import { createHash } from 'crypto';
 import { v4 } from 'uuid';
-import fs from 'fs';
+import * as fs from 'fs/promises';
 
 export class DBClient {
   static SHA1(str) {
