@@ -57,10 +57,10 @@ export default class FilesController {
     if (!usr) {
       response.status(401).json({ error: 'Unauthorized' }).end();
     } else {
-      const id = request.params.id;
+      const { id } = request.params;
       const file = await dbClient.filterFiles({ _id: id });
       if (!file) {
-        response.status(404).json({ error: 'Not found' }).end(); 
+        response.status(404).json({ error: 'Not found' }).end();
       } else {
         response.status(200).json(file).end();
       }
@@ -78,7 +78,10 @@ export default class FilesController {
     } else {
       const _parentId = request.query.parentId ? request.query.parentId : 0;
       const page = request.query.page ? request.query.page : 0;
-      const cursor = await dbClient.findFiles({ parentId: _parentId }, { limit: 20, skip: 20 * page});
+      const cursor = await dbClient.findFiles(
+        { parentId: _parentId },
+        { limit: 20, skip: 20 * page },
+      );
       response.status(200).json(cursor.toArray()).end();
     }
   }

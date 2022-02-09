@@ -23,7 +23,7 @@ export class DBClient {
     return this.myClient.isConnected();
   }
 
-  //---------------------------------------------------------------- users --------------------------------------------------
+  // ---------------------------------------------------------------- users -----------
 
   async nbUsers() {
     const myDB = this.myClient.db();
@@ -52,7 +52,7 @@ export class DBClient {
     return myCollection.findOne(filters);
   }
 
-  // ---------------------------------------------------- Files -----------------------------------------------------
+  // ---------------------------------------------------- Files -----------------------------------
 
   async nbFiles() {
     const myDB = this.myClient.db();
@@ -101,7 +101,7 @@ export class DBClient {
     return myCollection.findOne(filters);
   }
 
-  async findFiles(filters, options) {
+  async findFiles(filters, options = {}) {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('files');
     if ('_id' in filters) {
