@@ -3,5 +3,6 @@ test.js
 test.py
 image.png
 .vscode
-package.json
-package-lock.js
+git_push
+pull
+
