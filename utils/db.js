@@ -23,6 +23,8 @@ export class DBClient {
     return this.myClient.isConnected();
   }
 
+  // ---------------------------------------------------------------- users -----------
+
   async nbUsers() {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('users');
@@ -49,6 +51,8 @@ export class DBClient {
     }
     return myCollection.findOne(filters);
   }
+
+  // ---------------------------------------------------- Files -----------------------------------
 
   async nbFiles() {
     const myDB = this.myClient.db();
@@ -95,6 +99,16 @@ export class DBClient {
       filters._id = ObjectID(filters._id);
     }
     return myCollection.findOne(filters);
+  }
+
+  async findFiles(filters, options = {}) {
+    const myDB = this.myClient.db();
+    const myCollection = myDB.collection('files');
+    if ('_id' in filters) {
+      // eslint-disable-next-line no-param-reassign
+      filters._id = ObjectID(filters._id);
+    }
+    return myCollection.find(filters, options);
   }
 }
 
