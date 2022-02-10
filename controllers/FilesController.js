@@ -137,9 +137,11 @@ export default class FilesController {
     const token = `auth_${request.headers['x-token']}` || null;
     const usrId = await redisClient.get(token) || null;
     const file = await dbClient.filterFiles({ _id: request.params.id });
-    if (file.type === 'folder') {
+    if (!file) {
+      response.status(404).json({ error: 'Not found' }).end();
+    } else if (file.type === 'folder') {
       response.status(400).json({ error: "A folder doesn't have content" }).end();
-    } else if (file.isPublic || (String(file.userId) !== usrId)) {
+    } else if ((String(file.userId) === usrId) || file.isPublic) {
       try {
         const content = DBClient.readFile(file.localPath);
         const header = { 'Content-Type': contentType(file.localPath) };
