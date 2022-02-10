@@ -23,18 +23,16 @@ export default class UsersController {
 
   static async getMe(request, response) {
     let token = request.headers['x-token'];
-    if (!token) {
+    token = `auth_${token}`;
+    const usrId = await redisClient.get(token);
+    const usr = await dbClient.filterUser({ _id: usrId });
+    if (!usr) {
       response.status(401).json({ error: 'Unauthorized' }).end();
     } else {
-      token = `auth_${token}`;
-      const usrId = await redisClient.get(token);
-      const usr = await dbClient.filterUser({ _id: usrId });
-      if (!usr) {
-        response.status(401).json({ error: 'Unauthorized' }).end();
-      } else {
-        delete usr.password;
-        response.status(200).json(usr).end();
-      }
+      delete usr.password;
+      usr.id = usr._id;
+      delete usr._id;
+      response.status(200).json(usr).end();
     }
   }
 }

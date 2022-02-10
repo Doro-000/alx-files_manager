@@ -37,7 +37,7 @@ export class DBClient {
     const myCollection = myDB.collection('users');
 
     if (await myCollection.findOne({ email: _email })) {
-      throw new Error('Already exists');
+      throw new Error('Already exist');
     }
     const passwordHash = DBClient.SHA1(password);
     return myCollection.insertOne({ email: _email, password: passwordHash });
