@@ -106,7 +106,7 @@ export default class FilesController {
     token = `auth_${token}`;
     const userId = await redisClient.get(token);
     const usr = await dbClient.filterUser({ _id: userId });
-    const file = await dbClient.filterFiles({ _id: request.paramas.id });
+    const file = await dbClient.filterFiles({ _id: request.params.id });
     if (!usr) {
       response.status(401).json({ error: 'Unauthorized' }).end();
     } else if (!file || String(file.userId) !== userId) {
@@ -122,7 +122,7 @@ export default class FilesController {
     token = `auth_${token}`;
     const userId = await redisClient.get(token);
     const usr = await dbClient.filterUser({ _id: userId });
-    const file = await dbClient.filterFiles({ _id: request.paramas.id });
+    const file = await dbClient.filterFiles({ _id: request.params.id });
     if (!usr) {
       response.status(401).json({ error: 'Unauthorized' }).end();
     } else if (!file || String(file.userId) !== userId) {
@@ -136,7 +136,7 @@ export default class FilesController {
   static async getFile(request, response) {
     const token = `auth_${request.headers['x-token']}` || null;
     const usrId = await redisClient.get(token) || null;
-    const file = await dbClient.filterFiles({ _id: request.paramas.id });
+    const file = await dbClient.filterFiles({ _id: request.params.id });
     if (file.type === 'folder') {
       response.status(400).json({ error: "A folder doesn't have content" }).end();
     } else if (file.isPublic || (String(file.userId) !== usrId)) {
