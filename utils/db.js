@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { Buffer } from 'buffer';
 import { env } from 'process';
 import { MongoClient, ObjectID } from 'mongodb';
@@ -47,7 +48,6 @@ export class DBClient {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('users');
     if ('_id' in filters) {
-      // eslint-disable-next-line no-param-reassign
       filters._id = ObjectID(filters._id);
     }
     return myCollection.findOne(filters);
@@ -95,9 +95,10 @@ export class DBClient {
   async filterFiles(filters) {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('files');
-    if ('_id' in filters) {
-      filters._id = ObjectID(filters._id);
-    }
+    const idFilters = ['_id', 'userId', 'parentId'].filter((prop) => prop in filters && filters[prop] !== '0');
+    idFilters.forEach((i) => {
+      filters[i] = ObjectID(filters[i]);
+    });
     return myCollection.findOne(filters);
   }
 
@@ -114,8 +115,12 @@ export class DBClient {
   async updatefiles(filters, options = {}) {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('files');
-    myCollection.updateOne(filters, { $set: options });
+    await myCollection.updateOne(filters, { $set: options });
     return myCollection.findOne(filters);
+  }
+
+  static async readFile(path) {
+    return (await open(path)).readFile();
   }
 }
 

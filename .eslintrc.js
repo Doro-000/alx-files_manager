@@ -27,7 +27,6 @@ module.exports = {
       'LabeledStatement',
       'WithStatement',
     ],
-    'no-param-reassign': ['error', { props: false }],
   },
   overrides: [
     {
