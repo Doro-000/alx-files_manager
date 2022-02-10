@@ -96,7 +96,6 @@ export class DBClient {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('files');
     if ('_id' in filters) {
-      // eslint-disable-next-line no-param-reassign
       filters._id = ObjectID(filters._id);
     }
     return myCollection.findOne(filters);
@@ -105,15 +104,11 @@ export class DBClient {
   async findFiles(filters, options = {}) {
     const myDB = this.myClient.db();
     const myCollection = myDB.collection('files');
-    if ('_id' in filters) {
-      // eslint-disable-next-line no-param-reassign
-      filters._id = ObjectID(filters._id);
-    }
-    if ('userId' in filters) {
-      // eslint-disable-next-line no-param-reassign
-      filters.userId = ObjectID(filters.userId);
-    }
-    return myCollection.findOne(filters, options);
+    const idFilters = ['_id', 'userId', 'parentId'].filter((prop) => prop in filters && filters[prop] !== '0');
+    idFilters.forEach((i) => {
+      filters[i] = ObjectID(filters[i]);
+    });
+    return myCollection.find(filters, options);
   }
 
   async updatefiles(filters, options = {}) {
