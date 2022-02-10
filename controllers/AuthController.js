@@ -5,20 +5,20 @@ import redisClient from '../utils/redis';
 
 export default class AuthController {
   static async getConnect(request, response) {
-    const encodedAuthPair = request.headers.authorization.split(' ')[1];
-    const decodedAuthPair = Buffer.from(encodedAuthPair, 'base64').toString().split(':');
-    const _email = decodedAuthPair[0];
-    const pass = DBClient.SHA1(decodedAuthPair[1]);
-    const usr = await dbClient.filterUser({ email: _email });
-    if (usr) {
+    try {
+      const encodedAuthPair = request.headers.authorization.split(' ')[1];
+      const decodedAuthPair = Buffer.from(encodedAuthPair, 'base64').toString().split(':');
+      const _email = decodedAuthPair[0];
+      const pass = DBClient.SHA1(decodedAuthPair[1]);
+      const usr = await dbClient.filterUser({ email: _email });
       if (usr.password !== pass) {
-        response.status(403).json({ error: 'Forbidden' }).end();
+        response.status(401).json({ error: 'Unauthorized' }).end();
       } else {
         const _token = v4();
         await redisClient.set(`auth_${_token}`, usr._id.toString(), 86400);
         response.status(200).json({ token: _token }).end();
       }
-    } else {
+    } catch (error) {
       response.status(401).json({ error: 'Unauthorized' }).end();
     }
   }

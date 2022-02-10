@@ -6,9 +6,9 @@ export default class UsersController {
     const { email } = request.body;
     const { password } = request.body;
     if (!email) {
-      response.status(400).end('Missing email');
+      response.status(400).json({ error: 'Missing email' });
     } else if (!password) {
-      response.status(400).end('Missing password');
+      response.status(400).end({ error: 'Missing password' });
     } else {
       try {
         const insertRes = await dbClient.newUser(email, password);
@@ -16,7 +16,7 @@ export default class UsersController {
         const _email = insertRes.ops[0].email;
         response.status(201).json({ id: _id, email: _email }).end();
       } catch (err) {
-        response.status(400).end(err.message);
+        response.status(400).end({ error: err.message });
       }
     }
   }
