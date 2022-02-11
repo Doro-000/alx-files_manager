@@ -53,7 +53,7 @@ export default class FilesController {
     const file = await dbClient.filterFiles({ _id: id });
     if (!file) {
       response.status(404).json({ error: 'Not found' }).end();
-    } else if (String(file.userId) !== usrId) {
+    } else if (String(file.userId) !== String(usrId)) {
       response.status(404).json({ error: 'Not found' }).end();
     } else {
       response.status(200).json(file).end();
