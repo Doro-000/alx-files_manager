@@ -2,17 +2,12 @@
 import { Buffer } from 'buffer';
 import { env } from 'process';
 import { MongoClient, ObjectID } from 'mongodb';
-import { createHash } from 'crypto';
 import { v4 } from 'uuid';
 import { promises } from 'fs';
 
 const { open, mkdir } = promises;
 
 export class DBClient {
-  static SHA1(str) {
-    return createHash('SHA1').update(str).digest('hex');
-  }
-
   constructor() {
     const host = env.DB_HOST ? env.DB_HOST : '127.0.0.1';
     const port = env.DB_PORT ? env.DB_PORT : 27017;
@@ -40,8 +35,7 @@ export class DBClient {
     if (await myCollection.findOne({ email: _email })) {
       throw new Error('Already exist');
     }
-    const passwordHash = DBClient.SHA1(password);
-    return myCollection.insertOne({ email: _email, password: passwordHash });
+    return myCollection.insertOne({ email: _email, password });
   }
 
   async filterUser(filters) {
@@ -75,6 +69,7 @@ export class DBClient {
 
     const folderPath = env.FOLDER_PATH ? env.FOLDER_PATH : '/tmp/files_manager';
     const storeName = `${folderPath}/${v4()}`;
+    console.log(storeName);
 
     if (_type === 'file') {
       const File = await open(storeName, 'w');
@@ -117,10 +112,6 @@ export class DBClient {
     const myCollection = myDB.collection('files');
     await myCollection.updateOne(filters, { $set: options });
     return myCollection.findOne(filters);
-  }
-
-  static async readFile(path) {
-    return (await open(path)).readFile();
   }
 }
 

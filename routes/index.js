@@ -3,6 +3,7 @@ import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
 import FilesController from '../controllers/FilesController';
+import UtilController from '../controllers/UtilController';
 
 const router = Router();
 
@@ -31,21 +32,21 @@ router.use((request, response, next) => {
 });
 
 // ------------------- Users & misc ----------------------------
-router.get('/users/me', UsersController.getMe);
+router.get('/users/me', UtilController.token, UsersController.getMe);
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
 router.post('/users', UsersController.postNew);
 router.get('/connect', AuthController.getConnect);
-router.get('/disconnect', AuthController.getDisconnect);
+router.get('/disconnect', UtilController.token, AuthController.getDisconnect);
 
 // ---------------------- files --------------------------------
-router.post('/files', FilesController.postUpload);
+router.post('/files', UtilController.token, FilesController.postUpload);
 
-router.get('/files/:id', FilesController.getShow);
-router.get('/files', FilesController.getIndex);
-router.get('/files/:id/data', FilesController.getFile);
+router.get('/files/:id', UtilController.token, FilesController.getShow);
+router.get('/files', UtilController.token, FilesController.getIndex);
+router.get('/files/:id/data', UtilController.token, FilesController.getFile);
 
-router.put('/files/:id/publish', FilesController.putPublish);
-router.put('/files/:id/unpublish', FilesController.putUnpublish);
+router.put('/files/:id/publish', UtilController.token, FilesController.putPublish);
+router.put('/files/:id/unpublish', UtilController.token, FilesController.putUnpublish);
 
 export default router;
