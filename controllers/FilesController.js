@@ -106,10 +106,10 @@ export default class FilesController {
       response.status(404).json({ error: 'Not found' }).end();
     } else if (file.type === 'folder') {
       response.status(400).json({ error: "A folder doesn't have content" }).end();
-    } else if ((String(file.userId) === usrId) || file.isPublic) {
+    } else if ((String(file.userId) === String(usrId)) || file.isPublic) {
       try {
-        const content = UtilController.readFile(file.localPath);
-        const header = { 'Content-Type': contentType(file.localPath) };
+        const content = await UtilController.readFile(file.localPath);
+        const header = { 'Content-Type': contentType(file.name) };
         response.set(header).status(200).send(content).end();
       } catch (err) {
         response.status(404).json({ error: 'Not found' }).end();
