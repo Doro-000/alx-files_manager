@@ -80,7 +80,7 @@ export default class FilesController {
   static async putPublish(request, response) {
     const userId = request.usr._id;
     const file = await dbClient.filterFiles({ _id: request.params.id });
-    if (!file || String(file.userId) !== userId) {
+    if (!file || String(file.userId) !== String(userId)) {
       response.status(404).json({ error: 'Not found' }).end();
     } else {
       const newFile = await dbClient.updatefiles({ _id: file._id }, { isPublic: true });
@@ -91,7 +91,7 @@ export default class FilesController {
   static async putUnpublish(request, response) {
     const userId = request.usr._id;
     const file = await dbClient.filterFiles({ _id: request.params.id });
-    if (!file || String(file.userId) !== userId) {
+    if (!file || String(file.userId) !== String(userId)) {
       response.status(404).json({ error: 'Not found' }).end();
     } else {
       const newFile = await dbClient.updatefiles({ _id: file._id }, { isPublic: false });
