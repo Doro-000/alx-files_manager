@@ -5,7 +5,6 @@ import UtilController from './UtilController';
 
 export default class FilesController {
   static async postUpload(request, response) {
-    console.log(request.usr);
     const usrId = request.usr._id;
     const {
       name, type, parentId, isPublic, data,
